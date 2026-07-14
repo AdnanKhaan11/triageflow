@@ -23,7 +23,7 @@ def retrieve_node(state: dict) -> dict:
     'retrieved_chunks' populated.
     """
     raw_text = state.get("raw_text", "")
-    classification = state.get("classification", {})
+    # classification = state.get("classification", {})
 
     # For now, query using the raw ticket text directly. A
     # reformulated query (e.g. f"{equipment_id} {fault_type}

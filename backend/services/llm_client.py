@@ -1,10 +1,10 @@
 from __future__ import annotations
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
-import os
 
 """
 backend/services/llm_client.py
