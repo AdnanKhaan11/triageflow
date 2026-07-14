@@ -15,7 +15,9 @@ else:
 print()
 print("=== ALL TICKETS ===")
 try:
-    cursor.execute("SELECT ticket_id, status, created_at FROM tickets ORDER BY created_at DESC")
+    cursor.execute(
+        "SELECT ticket_id, status, created_at FROM tickets ORDER BY created_at DESC"
+    )
     rows = cursor.fetchall()
     if rows:
         for row in rows:

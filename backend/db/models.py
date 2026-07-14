@@ -35,7 +35,7 @@ class Ticket(Base):
     # One Ticket -> one Classification, one Draft, many AuditLog
     # entries. uselist=False means "give me back a single object,
     # not a list" for the one-to-one relationships.
-    # Classification" → The target ORM model. 
+    # Classification" → The target ORM model.
     classification = relationship(
         "Classification", back_populates="ticket", uselist=False
     )

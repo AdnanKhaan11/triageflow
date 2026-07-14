@@ -34,16 +34,16 @@ engine = create_engine(DATABASE_URL, connect_args=connect_args)
 # autoflush=False means SQLAlchemy won't auto-sync pending changes
 # before every query — you control this manually too.
 # in simple term session is a temporary workspace(it means a temporary
-#  area where you can work with the database) for 
-# interacting with the database. It allows you to query, 
-# add, update, and delete records in a controlled manner. 
-# Once you're done with your operations, you can commit the changes 
+#  area where you can work with the database) for
+# interacting with the database. It allows you to query,
+# add, update, and delete records in a controlled manner.
+# Once you're done with your operations, you can commit the changes
 # to make them permanent or roll them back if something goes wrong.
 
 SessionLocal = sessionmaker(
-    bind=engine, # bind = engine means every session uses this engine 
-    autocommit=False, # it means changes don't save automatically — you must call db.commit()(db.commit() means you have to explicitly commit the changes) explicitly, which gives you control over when data actually gets written.
-    autoflush=False, # it means SQLAlchemy won't auto-sync (auto-sync means in simple terms is the process of synchronizing(synchronizing meaning is ) data between different sources) pending changes before every query — you control this manually too.
+    bind=engine,  # bind = engine means every session uses this engine
+    autocommit=False,  # it means changes don't save automatically — you must call db.commit()(db.commit() means you have to explicitly commit the changes) explicitly, which gives you control over when data actually gets written.
+    autoflush=False,  # it means SQLAlchemy won't auto-sync (auto-sync means in simple terms is the process of synchronizing(synchronizing meaning is ) data between different sources) pending changes before every query — you control this manually too.
 )
 
 
@@ -59,7 +59,7 @@ def get_db():
     """
     db = SessionLocal()
     try:
-        yield db # yield is used to produce a value from a generator function
+        yield db  # yield is used to produce a value from a generator function
     finally:
         db.close()
 
@@ -72,7 +72,9 @@ def init_db() -> None:
     This is fine for development. For production with real data,
     you'd use Alembic migrations instead of create_all().
     """
-    Base.metadata.create_all(bind=engine) # this line creates all tables defined in models.py if they don't exist yet. It uses the metadata of the Base class to create the tables in the database. The bind=engine argument specifies which database engine to use for creating the tables.
+    Base.metadata.create_all(
+        bind=engine
+    )  # this line creates all tables defined in models.py if they don't exist yet. It uses the metadata of the Base class to create the tables in the database. The bind=engine argument specifies which database engine to use for creating the tables.
 
 
 if __name__ == "__main__":
