@@ -22,3 +22,4 @@ qdrant-client
 # Development / testing dependencies
 pytest
 pytest-asyncio
+pytest-cov

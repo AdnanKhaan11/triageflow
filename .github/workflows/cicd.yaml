@@ -59,7 +59,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13"
 
       - name: Cache pip dependencies
         uses: actions/cache@v4
@@ -72,8 +72,16 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       
+      - name: Install security tools
+        run: pip install bandit
+      
       - name: Verify imports
         run: python -c "from backend.api.main import app; print('Imports OK')"
+      
+      # - name: Run tests
+      #   run: pytest tests/ -v --tb=short
+      - name: Security Scan
+        run: bandit -r backend/
 
       - name: Run tests
         run: pytest tests/ -v --tb=short

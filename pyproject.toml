@@ -6,6 +6,8 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "bandit>=1.9.4",
     "black>=26.5.1",
+    "pytest-cov>=7.1.0",
     "qdrant-client>=1.18.0",
 ]
