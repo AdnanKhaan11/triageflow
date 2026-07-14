@@ -1,0 +1,10 @@
+{
+  "_comment": "TODO: Replace this with real sample tickets. Aim for 30-50 entries per triageFlow_plan.md Phase 1. Deliberately include a MIX of: obviously low-urgency tickets, obviously critical tickets (including safety-trigger keywords like 'gas leak' or 'fire'), and genuinely AMBIGUOUS tickets where reasonable humans might disagree on urgency. The ambiguous ones are the most valuable for testing — see tests/test_agents/test_classifier_agent.py.",
+  "sample_tickets": [
+    {
+      "_comment": "TODO: replace with a real example",
+      "raw_text": "EXAMPLE PLACEHOLDER - Pump P-204 making loud noise, vibration increasing since yesterday, temperature normal.",
+      "expected_urgency_hint": "TODO: what would YOU expect here? Use this to check your classifier later."
+    }
+  ]
+}

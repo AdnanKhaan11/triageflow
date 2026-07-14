@@ -1,0 +1,32 @@
+-- backend/db/schema.sql
+--
+-- REFERENCE SQL matching triageFlow_plan.md section 12 (Data Design).
+--
+-- This file is a REFERENCE for what models.py should produce once
+-- implemented via the ORM — it is NOT automatically executed by
+-- anything. Use it to sanity-check your SQLAlchemy models, or as a
+-- manual migration script if you decide to skip an ORM for some
+-- reason.
+--
+-- TODO: Fill in the actual CREATE TABLE statements here, matching
+-- the ER diagram in triageFlow_plan.md section 12:
+--   - tickets
+--   - classification
+--   - draft
+--   - audit_log
+--
+-- Don't forget the indexes called out in the plan doc:
+--   - status (on tickets)
+--   - created_at (on tickets)
+
+-- CREATE TABLE tickets (
+--     ticket_id TEXT PRIMARY KEY,
+--     raw_text TEXT NOT NULL,
+--     status TEXT NOT NULL,
+--     created_at TEXT NOT NULL,
+--     updated_at TEXT NOT NULL
+-- );
+-- CREATE INDEX idx_tickets_status ON tickets(status);
+-- CREATE INDEX idx_tickets_created_at ON tickets(created_at);
+
+-- TODO: classification, draft, audit_log tables

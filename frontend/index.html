@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TriageFlow — Submit Ticket</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo">TF</div>
+      <div>
+        <div class="nav-title">TRIAGEFLOW</div>
+        <div class="nav-subtitle">Industrial Maintenance AI</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Submit Ticket</a>
+      <a href="review.html" class="nav-link">Review Queue</a>
+    </div>
+    <div class="nav-status">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">Connecting...</span>
+    </div>
+  </nav>
+
+  <!-- Pipeline Status Bar (signature element) -->
+  <div class="pipeline-bar" id="pipeline-bar">
+    <div class="pipeline-step">
+      <span class="step-label" id="step-ingest">Ingest</span>
+    </div>
+    <span class="step-arrow">→</span>
+    <div class="pipeline-step">
+      <span class="step-label" id="step-classify">Classify</span>
+    </div>
+    <span class="step-arrow">→</span>
+    <div class="pipeline-step">
+      <span class="step-label" id="step-safety">Safety Check</span>
+    </div>
+    <span class="step-arrow">→</span>
+    <div class="pipeline-step">
+      <span class="step-label" id="step-retrieve">Retrieve</span>
+    </div>
+    <span class="step-arrow">→</span>
+    <div class="pipeline-step">
+      <span class="step-label" id="step-inventory">Inventory</span>
+    </div>
+    <span class="step-arrow">→</span>
+    <div class="pipeline-step">
+      <span class="step-label" id="step-draft">Draft</span>
+    </div>
+    <span class="step-arrow">→</span>
+    <div class="pipeline-step">
+      <span class="step-label" id="step-review">Human Review</span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="page-container">
+
+    <div class="page-header">
+      <div class="page-eyebrow">Maintenance Ticket Submission</div>
+      <div class="page-title">Report Equipment Fault</div>
+      <div class="page-desc">
+        Describe the fault in plain language. The AI pipeline will classify urgency,
+        retrieve relevant procedures, check parts availability, and draft a recommendation
+        for supervisor review.
+      </div>
+    </div>
+
+    <!-- Alert area -->
+    <div id="alert-area"></div>
+
+    <!-- Ticket Form -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">New Ticket</span>
+        <span class="ticket-id" id="new-ticket-id">— not yet submitted —</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="ticket-text">Fault Description</label>
+        <textarea
+          class="form-textarea"
+          id="ticket-text"
+          rows="6"
+          placeholder="e.g. Pump P-204 making loud noise, vibration increasing since yesterday. Temperature reading normal."
+        ></textarea>
+        <div class="form-hint">
+          Include: equipment ID (e.g. P-204), symptoms, when it started, any readings you have.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="example-select">Load Example Ticket</label>
+        <select class="form-input" id="example-select">
+          <option value="">— choose an example —</option>
+          <option value="Pump P-204 making loud noise, vibration increasing since yesterday. Temperature reading normal. Bearing housing hot to the touch.">
+            P-204 Pump — Vibration / Bearing Heat
+          </option>
+          <option value="Compressor C-11 has stopped operating completely. Production is halted. Gas lift injection has ceased.">
+            C-11 Compressor — Complete Failure / Production Halt
+          </option>
+          <option value="Motor M-18 temperature slightly higher than normal. No other symptoms observed.">
+            M-18 Motor — Slight Temperature Increase (Ambiguous)
+          </option>
+          <option value="Gas leak detected near Compressor C-305 skid. Gas detector alarm active. Area partially evacuated.">
+            C-305 — Gas Leak (Safety Critical)
+          </option>
+          <option value="Heat exchanger HX-77 outlet temperature gradually declining over the past week. No sudden changes.">
+            HX-77 — Gradual Fouling (Routine)
+          </option>
+        </select>
+        <div class="form-hint">These examples test different urgency levels and retrieval paths.</div>
+      </div>
+
+      <button class="btn btn-primary btn-full" id="submit-btn" onclick="handleSubmit()">
+        Submit Ticket
+      </button>
+    </div>
+
+    <!-- Result Card (hidden until submission succeeds) -->
+    <div class="card" id="result-card" style="display:none;">
+      <div class="card-header">
+        <span class="card-title">Submission Result</span>
+        <span class="badge badge-medium" id="result-status-badge">Processing</span>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <div class="field-label">Ticket ID</div>
+          <div class="field-value" style="font-family:var(--font-mono);font-size:0.82rem;" id="result-ticket-id">—</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Status</div>
+          <div class="field-value" id="result-status">—</div>
+        </div>
+      </div>
+
+      <div class="alert alert-info" style="margin-top:0.75rem;">
+        ℹ The AI pipeline is running. Once it reaches the review stage,
+        a supervisor can approve or reject the recommendation in the
+        <a href="review.html" style="color:var(--accent-orange);">Review Queue</a>.
+      </div>
+
+      <div style="margin-top:1rem;">
+        <button class="btn btn-edit btn-sm" onclick="resetForm()">Submit Another Ticket</button>
+        <a href="review.html" class="btn btn-primary btn-sm" style="margin-left:0.5rem;">
+          Go to Review Queue →
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Toast notifications -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="api.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

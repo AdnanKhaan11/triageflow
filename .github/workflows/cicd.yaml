@@ -1,0 +1,146 @@
+name: TriageFlow CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+# Cancel any in-progress run for the same branch when a new push arrives
+# Prevents wasted CI minutes on outdated commits
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  # ============================================================
+  # JOB 1: Code Quality
+  # Runs on every push and PR — fast feedback on style issues
+  # ============================================================
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install linting tools
+        run: pip install ruff black
+
+      # ruff catches real bugs and bad patterns (unused imports,
+      # undefined variables, etc) — not just style
+      - name: Run ruff linter
+        run: ruff check backend/ --output-format=github
+
+      # black checks formatting — fails if any file would be reformatted
+      - name: Run black formatter check
+        run: black backend/ --check --diff
+
+  # ============================================================
+  # JOB 2: Tests
+  # Runs after lint passes — no point testing unclean code
+  # ============================================================
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest tests/ -v --tb=short
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          MODEL_NAME: ${{ vars.MODEL_NAME }}
+          DATABASE_URL: ${{ vars.DATABASE_URL }}
+
+  # ============================================================
+  # JOB 3: Build Docker Images
+  # Only runs on pushes to main after tests pass
+  # Validates that both containers actually build successfully
+  # ============================================================
+  build:
+    name: Build & Validate Docker Images
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend Docker image
+        run: |
+          docker build \
+            -f deployment/Dockerfile \
+            -t triageflow-backend:${{ github.sha }} \
+            -t triageflow-backend:latest \
+            .
+
+      - name: Build frontend Docker image
+        run: |
+          docker build \
+            -f frontend/Dockerfile \
+            -t triageflow-frontend:${{ github.sha }} \
+            -t triageflow-frontend:latest \
+            ./frontend
+
+      - name: Validate containers start correctly
+        run: |
+          docker compose -f deployment/docker-compose.yml up -d
+          sleep 10
+          curl --fail http://localhost:8000/health || exit 1
+          echo "Backend health check passed"
+          docker compose -f deployment/docker-compose.yml down
+
+  # ============================================================
+  # JOB 4: Deploy
+  # Only runs on main after build passes
+  # Triggers Render (backend) and Netlify (frontend) deployments
+  # ============================================================
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      # Trigger Render backend deployment via deploy hook
+      # Add your Render deploy hook URL as a GitHub secret:
+      # Settings → Secrets → RENDER_DEPLOY_HOOK_URL
+      - name: Deploy backend to Render
+        if: ${{ secrets.RENDER_DEPLOY_HOOK_URL != '' }}
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+          echo "Backend deployment triggered on Render"
+
+      # Netlify frontend deployment is handled automatically by
+      # Netlify's GitHub integration — no step needed here.
+      # Just connect your repo in Netlify dashboard and set
+      # Base directory: frontend
+      # Build command: (none — static files)
+      # Publish directory: frontend
+      - name: Frontend deployment note
+        run: |
+          echo "Frontend auto-deploys via Netlify GitHub integration"
+          echo "Configure at: https://app.netlify.com"

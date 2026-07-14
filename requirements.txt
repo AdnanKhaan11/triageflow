@@ -1,0 +1,24 @@
+# Production dependencies
+chromadb
+fastapi
+langchain
+langchain-chroma
+langchain-community
+langchain-core
+langchain-groq
+langchain-huggingface
+langchain-text-splitters
+langgraph
+langgraph-checkpoint-sqlite
+pydantic
+python-dotenv
+requests
+sentence-transformers
+sqlalchemy
+# streamlit
+uvicorn
+# database
+qdrant-client
+# Development / testing dependencies
+pytest
+pytest-asyncio

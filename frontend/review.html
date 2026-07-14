@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TriageFlow — Review Queue</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="nav">
+      <a href="index.html" class="nav-brand">
+        <div class="nav-logo">TF</div>
+        <div>
+          <div class="nav-title">TRIAGEFLOW</div>
+          <div class="nav-subtitle">Industrial Maintenance AI</div>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Submit Ticket</a>
+        <a href="review.html" class="nav-link active">Review Queue</a>
+      </div>
+      <div class="nav-status">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-text">Connecting...</span>
+      </div>
+    </nav>
+
+    <!-- Pipeline Status Bar -->
+    <div class="pipeline-bar">
+      <div class="pipeline-step">
+        <span class="step-label completed">Ingest</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="pipeline-step">
+        <span class="step-label completed">Classify</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="pipeline-step">
+        <span class="step-label completed">Safety Check</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="pipeline-step">
+        <span class="step-label completed">Retrieve</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="pipeline-step">
+        <span class="step-label completed">Inventory</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="pipeline-step">
+        <span class="step-label completed">Draft</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="pipeline-step">
+        <span class="step-label active">Human Review</span>
+      </div>
+    </div>
+
+    <!-- Split Panel Layout -->
+    <!-- Tab Bar -->
+    <div
+      style="
+        background: var(--bg-card-deep);
+        border-bottom: 1px solid var(--border-default);
+        padding: 0 1.5rem;
+        display: flex;
+        gap: 0;
+      "
+    >
+      <button
+        class="tab-btn active"
+        id="tab-queue"
+        onclick="switchTab('queue')"
+      >
+        Awaiting Review
+        <span class="tab-count" id="queue-count">0</span>
+      </button>
+      <button class="tab-btn" id="tab-history" onclick="switchTab('history')">
+        History
+        <span class="tab-count" id="history-count">0</span>
+      </button>
+    </div>
+
+    <!-- Split Panel Layout -->
+    <div class="review-layout">
+      <!-- Left: Ticket List -->
+      <div class="ticket-list">
+        <div class="ticket-list-header">
+          <span id="list-heading">Awaiting Review</span>
+          <button
+            class="btn btn-sm"
+            style="
+              padding: 0.2rem 0.6rem;
+              background: var(--bg-card-deep);
+              border: 1px solid var(--border-bright);
+              color: var(--text-secondary);
+              font-size: 0.68rem;
+            "
+            onclick="refreshCurrentTab()"
+          >
+            ↻ Refresh
+          </button>
+        </div>
+        <div class="ticket-list-body" id="ticket-list-body">
+          <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <div class="empty-state-title">Loading...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Detail Panel -->
+      <div class="detail-panel" id="detail-panel">
+        <div class="empty-state" style="margin-top: 4rem">
+          <div class="empty-state-icon">←</div>
+          <div class="empty-state-title">Select a ticket to review</div>
+          <div class="empty-state-desc">
+            Choose a ticket from the queue on the left.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="api.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

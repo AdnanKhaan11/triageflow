@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.gitignore
+data/chroma_store/
+data/triageflow_checkpoints.db
+triageflow.db
+*.db
+.env
+.DS_Store
+frontend/
+docs/
+tests/
+*.md
