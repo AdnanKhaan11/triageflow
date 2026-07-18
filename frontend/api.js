@@ -27,6 +27,7 @@ async function apiFetch(path, options = {}) {
 
   return response.json();
 }
+
 // GET /tickets/history
 // Returns all closed/decided tickets
 async function getTicketHistory() {
@@ -104,22 +105,89 @@ async function checkHealth() {
 }
 
 // -----------------------------------------------------------------------
-// UI Helper: show a toast notification
+// UI Helper: show a toast notification (Enhanced - Top Position)
 // -----------------------------------------------------------------------
-function showToast(message, type = "success") {
+function showToast(message, type = "success", title = null) {
   const container = document.getElementById("toast-container");
   if (!container) return;
 
-  const icon = type === "success" ? "✓" : type === "error" ? "✗" : "ℹ";
+  // Set default titles based on type
+  const titles = {
+    success: "Success",
+    error: "Error",
+    info: "Information",
+    warning: "Warning",
+  };
+
+  const finalTitle = title || titles[type] || "Notification";
+
+  // Icons
+  const icons = {
+    success: "✓",
+    error: "✗",
+    info: "ℹ",
+    warning: "⚠",
+  };
+
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
-  toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+  toast.innerHTML = `
+    <div class="toast-icon">${icons[type] || "ℹ"}</div>
+    <div class="toast-content">
+      <div class="toast-title">${finalTitle}</div>
+      <div class="toast-message">${message}</div>
+    </div>
+    <button class="toast-close" onclick="this.closest('.toast').remove()">✕</button>
+    <div class="toast-progress"></div>
+  `;
+
   container.appendChild(toast);
 
+  // Auto-remove with animation
   setTimeout(() => {
-    toast.style.animation = "slide-in 0.2s ease reverse";
-    setTimeout(() => toast.remove(), 200);
+    toast.classList.add("toast-exit");
+    setTimeout(() => toast.remove(), 300);
   }, 3500);
+}
+
+// -----------------------------------------------------------------------
+// UI Helper: Add activity feed item
+// -----------------------------------------------------------------------
+function addActivity(message, type = "info") {
+  const feed = document.getElementById("activity-feed");
+  if (!feed) return;
+
+  const dotColors = {
+    success: "green",
+    info: "purple",
+    warning: "orange",
+    error: "orange",
+  };
+
+  const item = document.createElement("div");
+  item.className = "activity-item";
+  item.innerHTML = `
+    <span class="activity-dot ${dotColors[type] || "purple"}"></span>
+    <span>${message}</span>
+    <span class="activity-time">${new Date().toLocaleTimeString()}</span>
+  `;
+
+  feed.appendChild(item);
+
+  // Keep only last 5 items
+  while (feed.children.length > 5) {
+    feed.removeChild(feed.firstChild);
+  }
+
+  // Auto-remove after 8 seconds
+  setTimeout(() => {
+    if (item.parentNode) {
+      item.style.opacity = "0";
+      item.style.transform = "translateX(20px)";
+      item.style.transition = "all 0.3s ease";
+      setTimeout(() => item.remove(), 300);
+    }
+  }, 8000);
 }
 
 // -----------------------------------------------------------------------

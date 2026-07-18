@@ -20,9 +20,15 @@
         <a href="index.html" class="nav-link">Submit Ticket</a>
         <a href="review.html" class="nav-link active">Review Queue</a>
       </div>
-      <div class="nav-status">
-        <div class="status-dot" id="status-dot"></div>
-        <span id="status-text">Connecting...</span>
+      <div class="nav-right">
+        <div class="nav-status">
+          <div class="status-dot" id="status-dot"></div>
+          <span id="status-text">Connecting...</span>
+        </div>
+        <div class="user-avatar" title="John Doe">JD</div>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+          ☀️
+        </button>
       </div>
     </nav>
 
@@ -61,11 +67,15 @@
     <!-- Tab Bar -->
     <div
       style="
-        background: var(--bg-card-deep);
-        border-bottom: 1px solid var(--border-default);
+        background: rgba(17, 24, 39, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(249, 115, 22, 0.08);
         padding: 0 1.5rem;
         display: flex;
         gap: 0;
+        position: relative;
+        z-index: 1;
       "
     >
       <button
@@ -91,13 +101,24 @@
           <button
             class="btn btn-sm"
             style="
-              padding: 0.2rem 0.6rem;
-              background: var(--bg-card-deep);
-              border: 1px solid var(--border-bright);
+              padding: 0.25rem 0.75rem;
+              background: rgba(249, 115, 22, 0.1);
+              border: 1px solid rgba(249, 115, 22, 0.2);
               color: var(--text-secondary);
-              font-size: 0.68rem;
+              font-size: 0.65rem;
+              border-radius: var(--radius-sm);
+              cursor: pointer;
+              transition: all 0.3s ease;
             "
             onclick="refreshCurrentTab()"
+            onmouseover="
+              this.style.background = 'rgba(249,115,22,0.2)';
+              this.style.color = 'var(--text-primary)';
+            "
+            onmouseout="
+              this.style.background = 'rgba(249,115,22,0.1)';
+              this.style.color = 'var(--text-secondary)';
+            "
           >
             ↻ Refresh
           </button>
@@ -122,8 +143,11 @@
       </div>
     </div>
 
-    <!-- Toast notifications -->
+    <!-- Toast notifications - Top positioned -->
     <div class="toast-container" id="toast-container"></div>
+
+    <!-- Activity Feed -->
+    <div class="activity-feed" id="activity-feed"></div>
 
     <script src="api.js"></script>
     <script src="app.js"></script>
