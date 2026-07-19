@@ -13,7 +13,8 @@ langgraph-checkpoint-sqlite
 pydantic
 python-dotenv
 requests
-sentence-transformers
+# sentence-transformers
+fastembed
 sqlalchemy
 # streamlit
 uvicorn

@@ -12,7 +12,9 @@ from typing import List, Dict, Any
 
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
+
+# from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
@@ -38,11 +40,12 @@ class VectorStoreClient:
     def __init__(self, persist_directory: str = "./data/chroma_store") -> None:
         self.persist_directory = persist_directory
 
-        self.embeddings = HuggingFaceEmbeddings(
-            model_name="BAAI/bge-small-en-v1.5",
-            model_kwargs={"device": "cpu"},
-            encode_kwargs={"normalize_embeddings": True},
-        )
+        # self.embeddings = HuggingFaceEmbeddings(
+        #     model_name="BAAI/bge-small-en-v1.5",
+        #     model_kwargs={"device": "cpu"},
+        #     encode_kwargs={"normalize_embeddings": True},
+        # )
+        self.embeddings = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
 
         # This is the SAME object we'll keep using for both ingestion
         # and querying -- there is only ever one vectorstore reference,
