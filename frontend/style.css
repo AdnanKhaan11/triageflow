@@ -25,9 +25,15 @@
   --border-default: #1e293b;
   --border-bright:  #334155;
   --green:          #10b981;
+  --green-dark:     #059669;
   --red:            #ef4444;
+  --red-dark:       #dc2626;
   --yellow:         #f59e0b;
+  --yellow-dark:    #d97706;
   --blue:           #3b82f6;
+  --blue-dark:      #2563eb;
+  --orange-dark:    #ea580c;
+  --white:          #ffffff;
 
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -43,7 +49,7 @@
 [data-theme="light"] {
   --bg-primary: #f1f5f9;
   --bg-secondary: #e2e8f0;
-  --bg-card: #ffffff;
+  --bg-card: var(--white);
   --bg-card-deep: #f8fafc;
   --bg-input: #f1f5f9;
   --text-primary: #0f172a;
@@ -139,7 +145,7 @@ body::before {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--white);
   letter-spacing: -0.5px;
   animation: logoPulse 3s ease-in-out infinite;
   box-shadow: 0 0 20px rgba(249, 115, 22, 0.2);
@@ -269,7 +275,7 @@ body::before {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--white);
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid transparent;
@@ -281,26 +287,6 @@ body::before {
   transform: scale(1.05);
   border-color: var(--accent-orange);
   box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
-}
-
-.user-avatar .avatar-badge {
-  position: absolute;
-  bottom: -2px;
-  right: -2px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--green);
-  border: 2px solid var(--bg-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.5rem;
-  color: #fff;
-}
-
-[data-theme="light"] .user-avatar .avatar-badge {
-  border-color: #fff;
 }
 
 /* --- Theme Toggle --- */
@@ -643,7 +629,89 @@ body::before {
   font-style: italic;
 }
 
-/* --- Enhanced Submit Button --- */
+/* --- Glowing Submit Button --- */
+.btn-submit-glow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.9rem 2rem;
+  background: linear-gradient(135deg, var(--accent-orange), var(--orange-dark));
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 25px rgba(249, 115, 22, 0.35);
+  letter-spacing: 0.5px;
+}
+
+.btn-submit-glow::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, var(--accent-orange), var(--accent-purple), var(--accent-orange));
+  border-radius: var(--radius-md);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+}
+
+.btn-submit-glow:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 8px 40px rgba(249, 115, 22, 0.5);
+}
+
+.btn-submit-glow:hover:not(:disabled)::before {
+  opacity: 1;
+}
+
+.btn-submit-glow:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn-submit-glow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-submit-icon {
+  font-size: 1.2rem;
+}
+
+.btn-submit-shine {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15), transparent 60%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.btn-submit-glow:hover:not(:disabled) .btn-submit-shine {
+  opacity: 1;
+  animation: shineMove 2s ease-in-out infinite;
+}
+
+@keyframes shineMove {
+  0% { transform: translate(-30%, -30%); }
+  50% { transform: translate(30%, 30%); }
+  100% { transform: translate(-30%, -30%); }
+}
+
+/* --- Regular Buttons (for compatibility) --- */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -688,8 +756,8 @@ body::before {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  color: #fff;
+  background: linear-gradient(135deg, var(--accent-orange), var(--orange-dark));
+  color: var(--white);
   box-shadow: 0 4px 20px rgba(249, 115, 22, 0.35);
   font-size: 0.95rem;
   padding: 0.85rem 2rem;
@@ -698,36 +766,14 @@ body::before {
   position: relative;
 }
 
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(135deg, #f97316, #8b5cf6, #f97316);
-  border-radius: var(--radius-md);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: -1;
-}
-
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px) scale(1.02);
   box-shadow: 0 8px 35px rgba(249, 115, 22, 0.5);
 }
 
-.btn-primary:hover:not(:disabled)::before {
-  opacity: 1;
-}
-
-.btn-primary .btn-icon {
-  font-size: 1.1rem;
-}
-
 .btn-approve {
-  background: linear-gradient(135deg, var(--green), #059669);
-  color: #fff;
+  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  color: var(--white);
   box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
 }
 
@@ -1067,19 +1113,19 @@ body::before {
 }
 
 .toast.success::before {
-  background: linear-gradient(180deg, #10b981, #059669);
+  background: linear-gradient(180deg, var(--green), var(--green-dark));
 }
 
 .toast.error::before {
-  background: linear-gradient(180deg, #ef4444, #dc2626);
+  background: linear-gradient(180deg, var(--red), var(--red-dark));
 }
 
 .toast.info::before {
-  background: linear-gradient(180deg, #3b82f6, #2563eb);
+  background: linear-gradient(180deg, var(--blue), var(--blue-dark));
 }
 
 .toast.warning::before {
-  background: linear-gradient(180deg, #f59e0b, #d97706);
+  background: linear-gradient(180deg, var(--yellow), var(--yellow-dark));
 }
 
 .toast .toast-icon {
@@ -1096,22 +1142,22 @@ body::before {
 
 .toast.success .toast-icon {
   background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
+  color: var(--green);
 }
 
 .toast.error .toast-icon {
   background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  color: var(--red);
 }
 
 .toast.info .toast-icon {
   background: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
+  color: var(--blue);
 }
 
 .toast.warning .toast-icon {
   background: rgba(245, 158, 11, 0.2);
-  color: #f59e0b;
+  color: var(--yellow);
 }
 
 .toast .toast-content {
@@ -1165,11 +1211,11 @@ body::before {
 }
 
 .toast.success .toast-progress {
-  background: linear-gradient(90deg, #10b981, #059669);
+  background: linear-gradient(90deg, var(--green), var(--green-dark));
 }
 
 .toast.error .toast-progress {
-  background: linear-gradient(90deg, #ef4444, #dc2626);
+  background: linear-gradient(90deg, var(--red), var(--red-dark));
 }
 
 @keyframes toastSlideDown {
@@ -1245,17 +1291,17 @@ body::before {
 }
 
 .activity-item .activity-dot.green {
-  background: #10b981;
+  background: var(--green);
   animation: dotPulse 1.5s ease-in-out infinite;
 }
 
 .activity-item .activity-dot.orange {
-  background: #f97316;
+  background: var(--accent-orange);
   animation: dotPulse 1.5s ease-in-out infinite 0.3s;
 }
 
 .activity-item .activity-dot.purple {
-  background: #8b5cf6;
+  background: var(--accent-purple);
   animation: dotPulse 1.5s ease-in-out infinite 0.6s;
 }
 
@@ -1365,6 +1411,7 @@ body::before {
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  padding-right: 3.5rem !important;
 }
 
 .ticket-item:hover {
@@ -1418,7 +1465,23 @@ body::before {
   border-color: rgba(249, 115, 22, 0.15);
 }
 
-/* --- Tabs --- */
+/* --- Professional Tab Bar --- */
+.tab-bar {
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(249, 115, 22, 0.08);
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="light"] .tab-bar {
+  background: rgba(255, 255, 255, 0.85);
+}
+
 .tab-btn {
   background: transparent;
   border: none;
@@ -1428,17 +1491,43 @@ body::before {
   font-family: var(--font-ui);
   font-size: 0.82rem;
   font-weight: 500;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1.25rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   transition: all 0.3s ease;
+  position: relative;
 }
 
-.tab-btn:hover { color: var(--text-primary); }
+.tab-btn:hover {
+  color: var(--text-primary);
+}
+
 .tab-btn.active {
   color: var(--accent-orange);
   border-bottom-color: var(--accent-orange);
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-orange), var(--accent-purple));
+  animation: tabGlow 2s ease-in-out infinite;
+}
+
+@keyframes tabGlow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.tab-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .tab-count {
@@ -1449,12 +1538,152 @@ body::before {
   font-size: 0.65rem;
   padding: 0.1rem 0.45rem;
   color: var(--text-muted);
+  min-width: 20px;
+  text-align: center;
 }
 
 .tab-btn.active .tab-count {
   background: var(--accent-orange-dim);
   border-color: var(--accent-orange);
   color: var(--accent-orange);
+}
+
+/* --- Professional Refresh Button --- */
+.btn-refresh {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.8rem;
+  background: rgba(249, 115, 22, 0.08);
+  border: 1px solid rgba(249, 115, 22, 0.15);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: var(--font-ui);
+}
+
+.btn-refresh:hover {
+  background: rgba(249, 115, 22, 0.15);
+  border-color: rgba(249, 115, 22, 0.3);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.1);
+}
+
+.btn-refresh:active {
+  transform: scale(0.95);
+}
+
+.refresh-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: transform 0.5s ease;
+}
+
+.btn-refresh:hover .refresh-icon {
+  transform: rotate(180deg);
+}
+
+/* --- Professional Empty State SVG --- */
+.empty-state-svg {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 0.75rem;
+  color: var(--text-muted);
+  opacity: 0.4;
+  display: block;
+}
+
+/* --- DELETE BUTTON - ALWAYS VISIBLE IN HISTORY --- */
+.delete-history-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--red);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+  z-index: 10;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.delete-history-btn:hover {
+  background: rgba(239, 68, 68, 0.35) !important;
+  transform: translateY(-50%) rotate(90deg) scale(1.15) !important;
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4) !important;
+  color: var(--red-dark) !important;
+}
+
+.delete-history-btn:active {
+  transform: translateY(-50%) scale(0.85) !important;
+}
+
+/* Make sure the delete button is clickable */
+.ticket-item .delete-history-btn {
+  pointer-events: auto;
+}
+
+/* --- Confirmation Buttons --- */
+.confirmation-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.btn-confirm-danger {
+  background: linear-gradient(135deg, var(--red), var(--red-dark));
+  color: white;
+  border: none;
+  padding: 0.4rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.btn-confirm-danger:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+}
+
+.btn-confirm-cancel {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  padding: 0.4rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-confirm-cancel:hover {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+/* Toast warning style */
+.toast.warning {
+  border-left: 3px solid var(--yellow);
 }
 
 /* --- Responsive --- */
@@ -1475,3 +1704,59 @@ body::before {
   }
 }
 
+/* --- Fix for Submit Button (using existing btn-primary) --- */
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-orange), var(--orange-dark)) !important;
+  color: var(--white) !important;
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.35) !important;
+  font-size: 0.95rem !important;
+  padding: 0.85rem 2rem !important;
+  border-radius: var(--radius-md) !important;
+  letter-spacing: 0.5px !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-weight: 600 !important;
+  font-family: var(--font-ui) !important;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 8px 35px rgba(249, 115, 22, 0.5) !important;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+/* --- Fix for Refresh Button --- */
+.btn-refresh {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  padding: 0.25rem 0.75rem !important;
+  background: rgba(249, 115, 22, 0.08) !important;
+  border: 1px solid rgba(249, 115, 22, 0.15) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-secondary) !important;
+  font-size: 0.7rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  font-family: var(--font-ui) !important;
+  line-height: 1 !important;
+}
+
+.btn-refresh:hover {
+  background: rgba(249, 115, 22, 0.15) !important;
+  border-color: rgba(249, 115, 22, 0.3) !important;
+  color: var(--text-primary) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.1) !important;
+}
+
+.btn-refresh:active {
+  transform: scale(0.95) !important;
+}

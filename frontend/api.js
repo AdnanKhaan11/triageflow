@@ -107,11 +107,19 @@ async function checkHealth() {
 // -----------------------------------------------------------------------
 // UI Helper: show a toast notification (Enhanced - Top Position)
 // -----------------------------------------------------------------------
-function showToast(message, type = "success", title = null) {
+// -----------------------------------------------------------------------
+// UI Helper: show a toast notification (Enhanced - Top Position)
+// -----------------------------------------------------------------------
+function showToast(
+  message,
+  type = "success",
+  title = null,
+  showConfirm = false,
+  onConfirm = null,
+) {
   const container = document.getElementById("toast-container");
   if (!container) return;
 
-  // Set default titles based on type
   const titles = {
     success: "Success",
     error: "Error",
@@ -121,7 +129,6 @@ function showToast(message, type = "success", title = null) {
 
   const finalTitle = title || titles[type] || "Notification";
 
-  // Icons
   const icons = {
     success: "✓",
     error: "✗",
@@ -131,7 +138,8 @@ function showToast(message, type = "success", title = null) {
 
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
-  toast.innerHTML = `
+
+  let contentHTML = `
     <div class="toast-icon">${icons[type] || "ℹ"}</div>
     <div class="toast-content">
       <div class="toast-title">${finalTitle}</div>
@@ -141,6 +149,7 @@ function showToast(message, type = "success", title = null) {
     <div class="toast-progress"></div>
   `;
 
+  toast.innerHTML = contentHTML;
   container.appendChild(toast);
 
   // Auto-remove with animation
@@ -149,7 +158,6 @@ function showToast(message, type = "success", title = null) {
     setTimeout(() => toast.remove(), 300);
   }, 3500);
 }
-
 // -----------------------------------------------------------------------
 // UI Helper: Add activity feed item
 // -----------------------------------------------------------------------
@@ -197,4 +205,15 @@ function urgencyBadge(urgency) {
   if (!urgency) return "";
   const cls = `badge badge-${urgency.toLowerCase()}`;
   return `<span class="${cls}">${urgency.toUpperCase()}</span>`;
+}
+
+// -----------------------------------------------------------------------
+// DELETE /tickets/{ticket_id}
+// Deletes a ticket from history
+// Returns: { ticket_id, status }
+// -----------------------------------------------------------------------
+async function deleteTicket(ticketId) {
+  return apiFetch(`/tickets/${ticketId}`, {
+    method: "DELETE",
+  });
 }

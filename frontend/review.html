@@ -63,30 +63,27 @@
       </div>
     </div>
 
-    <!-- Split Panel Layout -->
     <!-- Tab Bar -->
-    <div
-      style="
-        background: rgba(17, 24, 39, 0.6);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-bottom: 1px solid rgba(249, 115, 22, 0.08);
-        padding: 0 1.5rem;
-        display: flex;
-        gap: 0;
-        position: relative;
-        z-index: 1;
-      "
-    >
+    <div class="tab-bar">
       <button
         class="tab-btn active"
         id="tab-queue"
         onclick="switchTab('queue')"
       >
+        <svg class="tab-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path
+            d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zM4 15a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z"
+          />
+        </svg>
         Awaiting Review
         <span class="tab-count" id="queue-count">0</span>
       </button>
       <button class="tab-btn" id="tab-history" onclick="switchTab('history')">
+        <svg class="tab-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path
+            d="M10 1a1 1 0 011 1v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H3a1 1 0 110-2h6V2a1 1 0 011-1z"
+          />
+        </svg>
         History
         <span class="tab-count" id="history-count">0</span>
       </button>
@@ -98,29 +95,15 @@
       <div class="ticket-list">
         <div class="ticket-list-header">
           <span id="list-heading">Awaiting Review</span>
-          <button
-            class="btn btn-sm"
-            style="
-              padding: 0.25rem 0.75rem;
-              background: rgba(249, 115, 22, 0.1);
-              border: 1px solid rgba(249, 115, 22, 0.2);
-              color: var(--text-secondary);
-              font-size: 0.65rem;
-              border-radius: var(--radius-sm);
-              cursor: pointer;
-              transition: all 0.3s ease;
-            "
-            onclick="refreshCurrentTab()"
-            onmouseover="
-              this.style.background = 'rgba(249,115,22,0.2)';
-              this.style.color = 'var(--text-primary)';
-            "
-            onmouseout="
-              this.style.background = 'rgba(249,115,22,0.1)';
-              this.style.color = 'var(--text-secondary)';
-            "
-          >
-            ↻ Refresh
+          <button class="btn-refresh" onclick="refreshCurrentTab()">
+            <svg class="refresh-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fill-rule="evenodd"
+                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Refresh
           </button>
         </div>
         <div class="ticket-list-body" id="ticket-list-body">
@@ -134,7 +117,19 @@
       <!-- Right: Detail Panel -->
       <div class="detail-panel" id="detail-panel">
         <div class="empty-state" style="margin-top: 4rem">
-          <div class="empty-state-icon">←</div>
+          <svg
+            class="empty-state-svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
           <div class="empty-state-title">Select a ticket to review</div>
           <div class="empty-state-desc">
             Choose a ticket from the queue on the left.

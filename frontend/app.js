@@ -108,12 +108,6 @@ async function loadAnalytics() {
     ).textContent = successRate;
 
     // Calculate trends (compare with previous period - simplified)
-    const lastWeekTickets = allTickets.filter((t) => {
-      // If we had timestamps, we'd filter by date
-      return true;
-    });
-
-    // Update trends with real data
     const totalChange =
       totalTickets > 0
         ? "↑ " + Math.round(Math.random() * 20 + 5) + "% this month"
@@ -468,7 +462,7 @@ function renderTicketList() {
       return `
       <div class="ticket-item ${isSelected ? "selected" : ""}"
            onclick="selectTicket('${ticket.ticket_id}')"
-           style="animation: listItemFade 0.3s ease ${index * 0.05}s both;">
+           style="animation: listItemFade 0.3s ease ${index * 0.05}s both; position: relative; padding-right: 3.5rem;">
         <div class="ticket-item-id">#${ticket.ticket_id.slice(0, 8)}</div>
         <div class="ticket-item-text">${escapeHtml(rawText.slice(0, 70))}${rawText.length > 70 ? "…" : ""}</div>
         <div class="ticket-item-meta">
@@ -819,6 +813,112 @@ async function handleDecision(ticketId, decision) {
 }
 
 // -----------------------------------------------------------------------
+// DELETE TICKET (review.html - history tab)
+// -----------------------------------------------------------------------
+async function handleDeleteTicket(ticketId, event) {
+  // Stop event propagation so it doesn't trigger selectTicket
+  if (event) {
+    event.stopPropagation();
+  }
+
+  // Create a custom confirmation toast
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  toast.className = "toast warning";
+  toast.innerHTML = `
+    <div class="toast-icon">⚠</div>
+    <div class="toast-content">
+      <div class="toast-title">Confirm Delete</div>
+      <div class="toast-message">Delete ticket #${ticketId.slice(0, 8)}? This action cannot be undone.</div>
+      <div class="confirmation-buttons">
+        <button class="btn-confirm-danger" onclick="confirmDelete('${ticketId}')">
+          Yes, Delete
+        </button>
+        <button class="btn-confirm-cancel" onclick="this.closest('.toast').remove()">
+          Cancel
+        </button>
+      </div>
+    </div>
+    <button class="toast-close" onclick="this.closest('.toast').remove()">✕</button>
+    <div class="toast-progress" style="animation-duration: 8s;"></div>
+  `;
+  container.appendChild(toast);
+
+  // Auto-remove after 8 seconds if not interacted with
+  setTimeout(() => {
+    if (toast.parentNode) {
+      toast.classList.add("toast-exit");
+      setTimeout(() => toast.remove(), 300);
+    }
+  }, 8000);
+}
+
+// -----------------------------------------------------------------------
+// Confirm Delete
+// -----------------------------------------------------------------------
+async function confirmDelete(ticketId) {
+  try {
+    // Remove any existing confirmation toasts
+    const container = document.getElementById("toast-container");
+    if (container) {
+      const toasts = container.querySelectorAll(".toast.warning");
+      toasts.forEach((t) => t.remove());
+    }
+
+    // Show loading state
+    showToast(`Deleting ticket...`, "info", "Processing");
+
+    const result = await deleteTicket(ticketId);
+
+    // Remove from currentTickets array
+    currentTickets = currentTickets.filter((t) => t.ticket_id !== ticketId);
+
+    // Re-render the list
+    renderHistoryList();
+
+    // Update count
+    const countEl = document.getElementById("history-count");
+    if (countEl) countEl.textContent = currentTickets.length;
+
+    // Show success message
+    showToast(
+      `✓ Ticket #${ticketId.slice(0, 8)} deleted successfully`,
+      "success",
+      "Deleted",
+    );
+
+    // Add activity
+    addActivity(
+      `🗑️ Ticket #${ticketId.slice(0, 8)} deleted from history`,
+      "info",
+    );
+
+    // Clear detail panel if this ticket was selected
+    if (selectedTicketId === ticketId) {
+      selectedTicketId = null;
+      const panel = document.getElementById("detail-panel");
+      if (panel) {
+        panel.innerHTML = `
+          <div class="empty-state" style="margin-top:4rem;animation:alertSlide 0.5s ease;">
+            <div class="empty-state-icon">🗑️</div>
+            <div class="empty-state-title">Ticket deleted</div>
+            <div class="empty-state-desc">The ticket has been removed from history.</div>
+          </div>
+        `;
+      }
+    }
+
+    // Reload analytics
+    loadAnalytics();
+  } catch (err) {
+    showToast(`Failed to delete ticket: ${err.message}`, "error");
+    addActivity(`❌ Failed to delete ticket: ${err.message}`, "error");
+  }
+}
+
+// -----------------------------------------------------------------------
 // Utility: escape HTML to prevent XSS when inserting user-generated text
 // -----------------------------------------------------------------------
 function escapeHtml(str) {
@@ -940,17 +1040,17 @@ function renderHistoryList() {
 
       const decisionLabel =
         decision === "approve"
-          ? "✓ Approved"
+          ? "✅ Approved"
           : decision === "reject"
-            ? "✗ Rejected"
+            ? "❌ Rejected"
             : decision === "edit"
               ? "✎ Edited"
               : decision;
 
       return `
-      <div class="ticket-item ${isSelected ? "selected" : ""}"
+      <div class="ticket-item ${isSelected ? "selected" : ""}" 
            onclick="selectTicket('${ticket.ticket_id}')"
-           style="animation: listItemFade 0.3s ease ${index * 0.05}s both;">
+           style="animation: listItemFade 0.3s ease ${index * 0.05}s both; position: relative; padding-right: 3.5rem;">
         <div class="ticket-item-id">#${ticket.ticket_id.slice(0, 8)}</div>
         <div class="ticket-item-text">
           ${escapeHtml(rawText.slice(0, 70))}${rawText.length > 70 ? "…" : ""}
@@ -961,6 +1061,12 @@ function renderHistoryList() {
             ${decisionLabel}
           </span>
         </div>
+        <button 
+          class="delete-history-btn" 
+          onclick="event.stopPropagation(); handleDeleteTicket('${ticket.ticket_id}', event)"
+          title="Delete ticket from history">
+          ✕
+        </button>
       </div>
     `;
     })
