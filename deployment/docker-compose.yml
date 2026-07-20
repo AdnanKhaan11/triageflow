@@ -1,32 +1,58 @@
-version: "3.9"
-
 services:
 
   backend:
     build:
-      context: .
+      context: ..
       dockerfile: deployment/Dockerfile
     container_name: triageflow-backend
+    image: triageflow-backend:latest
+    env_file:
+      - ../.env
+    environment:
+      PYTHONUNBUFFERED: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      HF_HOME: /app/data/hf_cache
     ports:
       - "8000:8000"
-    env_file:
-      - .env
     volumes:
-      - ./data:/app/data
-    restart: unless-stopped
+      - ../data:/app/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 5
+      start_period: 120s
+    restart: unless-stopped
+    networks:
+      - triageflow-network
 
   frontend:
     build:
-      context: ./frontend
+      context: ../frontend
       dockerfile: Dockerfile
     container_name: triageflow-frontend
+    image: triageflow-frontend:latest
     ports:
-      - "80:80"
+      - "8080:80" 
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
+    networks:
+      - triageflow-network
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: triageflow-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ../data/qdrant_storage:/qdrant/storage
+    restart: unless-stopped
+    networks:
+      - triageflow-network
+
+networks:
+  triageflow-network:
+    driver: bridge
