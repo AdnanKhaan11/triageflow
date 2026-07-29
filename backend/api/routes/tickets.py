@@ -179,3 +179,29 @@ def get_audit_log(
     db: Session = Depends(get_db),
 ):
     return {"ticket_id": ticket_id, "audit_log": [], "message": "not implemented yet"}
+
+
+@router.delete("/{ticket_id}")
+def delete_ticket(
+    ticket_id: str,
+    db: Session = Depends(get_db),
+):
+    """
+    Permanently delete a ticket and all its related records.
+    Only closed/decided tickets should be deletable.
+    """
+    db_ticket = db.query(Ticket).filter(Ticket.ticket_id == ticket_id).first()
+
+    if not db_ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+
+    if db_ticket.status == "awaiting_review":
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot delete a ticket that is still awaiting review",
+        )
+
+    db.delete(db_ticket)
+    db.commit()
+
+    return {"message": "Ticket deleted", "ticket_id": ticket_id}

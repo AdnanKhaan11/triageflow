@@ -153,10 +153,65 @@ function showToast(
   container.appendChild(toast);
 
   // Auto-remove with animation
-  setTimeout(() => {
+  toast._dismissTimer = setTimeout(() => {
     toast.classList.add("toast-exit");
     setTimeout(() => toast.remove(), 300);
   }, 3500);
+
+  return toast;
+}
+
+// -----------------------------------------------------------------------
+// UI Helper: update an existing toast in place (icon/title/message/type)
+// instead of stacking a second toast on top of it. Used for flows like
+// delete, where "Processing..." should morph into "Deleted" rather than
+// showing two separate toast bars.
+// -----------------------------------------------------------------------
+function updateToast(toastEl, message, type = "success", title = null) {
+  if (!toastEl || !toastEl.isConnected) {
+    // Toast was already dismissed/removed — fall back to a fresh one
+    // so we never silently drop the message.
+    return showToast(message, type, title);
+  }
+
+  const titles = {
+    success: "Success",
+    error: "Error",
+    info: "Information",
+    warning: "Warning",
+  };
+  const icons = {
+    success: "✓",
+    error: "✗",
+    info: "ℹ",
+    warning: "⚠",
+  };
+  const finalTitle = title || titles[type] || "Notification";
+
+  toastEl.className = `toast ${type}`;
+  const iconEl = toastEl.querySelector(".toast-icon");
+  const titleEl = toastEl.querySelector(".toast-title");
+  const msgEl = toastEl.querySelector(".toast-message");
+  if (iconEl) iconEl.textContent = icons[type] || "ℹ";
+  if (titleEl) titleEl.textContent = finalTitle;
+  if (msgEl) msgEl.textContent = message;
+
+  // Restart the progress-bar animation so it visually reflects the new state
+  const progress = toastEl.querySelector(".toast-progress");
+  if (progress) {
+    progress.style.animation = "none";
+    void progress.offsetWidth; // force reflow
+    progress.style.animation = "";
+  }
+
+  // Reset the auto-dismiss timer
+  if (toastEl._dismissTimer) clearTimeout(toastEl._dismissTimer);
+  toastEl._dismissTimer = setTimeout(() => {
+    toastEl.classList.add("toast-exit");
+    setTimeout(() => toastEl.remove(), 300);
+  }, 3500);
+
+  return toastEl;
 }
 // -----------------------------------------------------------------------
 // UI Helper: Add activity feed item

@@ -859,6 +859,7 @@ async function handleDeleteTicket(ticketId, event) {
 // Confirm Delete
 // -----------------------------------------------------------------------
 async function confirmDelete(ticketId) {
+  let toastEl;
   try {
     // Remove any existing confirmation toasts
     const container = document.getElementById("toast-container");
@@ -867,8 +868,9 @@ async function confirmDelete(ticketId) {
       toasts.forEach((t) => t.remove());
     }
 
-    // Show loading state
-    showToast(`Deleting ticket...`, "info", "Processing");
+    // Show loading state — keep a reference so we can update this same
+    // toast instead of creating a second one for the result.
+    toastEl = showToast(`Deleting ticket...`, "info", "Processing");
 
     const result = await deleteTicket(ticketId);
 
@@ -882,8 +884,9 @@ async function confirmDelete(ticketId) {
     const countEl = document.getElementById("history-count");
     if (countEl) countEl.textContent = currentTickets.length;
 
-    // Show success message
-    showToast(
+    // Morph the loading toast into the success message
+    updateToast(
+      toastEl,
       `✓ Ticket #${ticketId.slice(0, 8)} deleted successfully`,
       "success",
       "Deleted",
@@ -913,7 +916,7 @@ async function confirmDelete(ticketId) {
     // Reload analytics
     loadAnalytics();
   } catch (err) {
-    showToast(`Failed to delete ticket: ${err.message}`, "error");
+    updateToast(toastEl, `Failed to delete ticket: ${err.message}`, "error");
     addActivity(`❌ Failed to delete ticket: ${err.message}`, "error");
   }
 }
