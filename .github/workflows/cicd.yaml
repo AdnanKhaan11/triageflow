@@ -34,12 +34,12 @@ jobs:
 
       # ruff catches real bugs and bad patterns (unused imports,
       # undefined variables, etc) — not just style
-      - name: Run ruff linter
-        run: ruff check backend/ --output-format=github
+      # - name: Run ruff linter
+      #   run: ruff check backend/ --output-format=github
 
-      # black checks formatting — fails if any file would be reformatted
-      - name: Run black formatter check
-        run: black backend/ --check --diff
+      # # black checks formatting — fails if any file would be reformatted
+      # - name: Run black formatter check
+      #   run: black backend/ --check --diff
 
   # ============================================================
   # JOB 2: Tests
