@@ -8,17 +8,16 @@ embedded) and querying them.
 from __future__ import annotations
 
 import re
-from typing import List, Dict, Any
+from typing import Any
 
+from dotenv import load_dotenv
+from langchain_chroma import Chroma
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.embeddings import FastEmbedEmbeddings
-from langchain_chroma import Chroma
 from langchain_core.documents import Document
-
-from dotenv import load_dotenv
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 load_dotenv()
 
@@ -55,13 +54,13 @@ class VectorStoreClient:
             embedding_function=self.embeddings,
         )
 
-    def ingest_documents(self, file_paths: List[str]) -> None:
+    def ingest_documents(self, file_paths: list[str]) -> None:
         """
         Load one or more PDF files, clean + chunk them, embed, and
         add them into the persistent collection. Each chunk keeps
         the source filename and page number as metadata.
         """
-        all_chunks: List[Document] = []
+        all_chunks: list[Document] = []
 
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=500,
@@ -87,7 +86,7 @@ class VectorStoreClient:
         # than creating a separate, disconnected store like before.
         self.vectorstore.add_documents(all_chunks)
 
-    def query(self, text: str, top_k: int = 5) -> List[Dict[str, Any]]:
+    def query(self, text: str, top_k: int = 5) -> list[dict[str, Any]]:
         """
         Run a similarity search and return a list of plain dicts,
         each with the chunk text plus its source metadata.

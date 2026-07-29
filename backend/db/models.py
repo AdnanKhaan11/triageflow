@@ -7,16 +7,16 @@ ORM(Object Relational Mapper) model definitions: Ticket, Classification, Draft, 
 from __future__ import annotations
 
 from sqlalchemy import (
-    Column,
-    String,
-    Float,
     Boolean,
-    Integer,
-    Text,
+    Column,
     DateTime,
+    Float,
     ForeignKey,
+    Integer,
+    String,
+    Text,
 )
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
 

@@ -8,6 +8,7 @@ classification + retrieved manual chunks + inventory status.
 from __future__ import annotations
 
 from langchain_core.prompts import ChatPromptTemplate
+
 from backend.services.llm_client import get_chat_model
 
 DRAFT_PROMPT = ChatPromptTemplate.from_messages(

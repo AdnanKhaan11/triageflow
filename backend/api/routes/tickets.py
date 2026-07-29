@@ -4,12 +4,12 @@ backend/api/routes/tickets.py
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+from langgraph.types import Command
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from langgraph.types import Command
 
 from backend.db.models import Ticket
 from backend.db.session import get_db
@@ -47,8 +47,8 @@ def create_ticket(
         ticket_id=ticket_id,
         raw_text=request.raw_text,
         status="awaiting_review",
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
     )
     db.add(db_ticket)
     db.commit()
@@ -163,7 +163,7 @@ def submit_decision(
     db_ticket = db.query(Ticket).filter(Ticket.ticket_id == ticket_id).first()
     if db_ticket:
         db_ticket.status = result.get("status", "closed")
-        db_ticket.updated_at = datetime.now(timezone.utc)
+        db_ticket.updated_at = datetime.now(UTC)
         db.commit()
 
     return {

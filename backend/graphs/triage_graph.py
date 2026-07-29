@@ -7,18 +7,18 @@ human-in-the-loop interrupt.
 
 from __future__ import annotations
 
-from langgraph.graph import StateGraph, START, END
+import sqlite3
 
 # from langgraph.checkpoint.memory import MemorySaver
 from langgraph.checkpoint.sqlite import SqliteSaver
-import sqlite3
-from langgraph.types import interrupt, Command
+from langgraph.graph import END, START, StateGraph
+from langgraph.types import Command, interrupt
 
-from backend.graphs.state import TicketState
 from backend.agents.classifier_agent import classify_node
-from backend.agents.retrieval_agent import retrieve_node
-from backend.agents.inventory_agent import check_inventory_node
 from backend.agents.drafting_agent import draft_node
+from backend.agents.inventory_agent import check_inventory_node
+from backend.agents.retrieval_agent import retrieve_node
+from backend.graphs.state import TicketState
 from backend.services.safety_rules import SafetyOverride
 
 # ---------------------------------------------------------------------

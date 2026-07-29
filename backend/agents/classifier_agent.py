@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel
-from backend.services.llm_client import get_chat_model
 from langchain_core.prompts import ChatPromptTemplate
+from pydantic import BaseModel
+
+from backend.services.llm_client import get_chat_model
 
 """
 backend/agents/classifier_agent.py

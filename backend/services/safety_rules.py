@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, Any
+from typing import Any
 
 """
 backend/services/safety_rules.py
@@ -29,8 +29,8 @@ class SafetyOverride:
         self.trigger_phrases = trigger_phrases
 
     def apply_safety_override(
-        self, raw_text: str, classification: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, raw_text: str, classification: dict[str, Any]
+    ) -> dict[str, Any]:
         modified_classification = classification.copy()
         modified_classification["safety_override_applied"] = False
         text_lower = raw_text.lower()

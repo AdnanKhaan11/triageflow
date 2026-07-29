@@ -12,3 +12,8 @@ dependencies = [
     "pytest-cov>=7.1.0",
     "qdrant-client>=1.18.0",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.0",
+]

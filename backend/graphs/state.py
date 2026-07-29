@@ -7,31 +7,31 @@ in the TriageFlow LangGraph workflow.
 
 from __future__ import annotations
 
-from typing import TypedDict, Optional, List, Dict, Any
+from datetime import UTC, datetime
+from typing import Any, TypedDict
 from uuid import uuid4
-from datetime import datetime, timezone
 
 
 class TicketState(TypedDict):
     ticket_id: str
     raw_text: str
-    classification: Optional[Dict[str, Any]]
+    classification: dict[str, Any] | None
     safety_override_applied: bool
-    retrieved_chunks: List[Dict[str, Any]]
-    inventory_check: Optional[Dict[str, Any]]
-    draft_recommendation: Optional[str]
-    human_decision: Optional[str]
-    human_feedback: Optional[str]
+    retrieved_chunks: list[dict[str, Any]]
+    inventory_check: dict[str, Any] | None
+    draft_recommendation: str | None
+    human_decision: str | None
+    human_feedback: str | None
     status: str
     created_at: str
     updated_at: str
 
 
-def create_initial_state(raw_text: str) -> "TicketState":
+def create_initial_state(raw_text: str) -> TicketState:
     """
     Build a fresh TicketState for a brand-new incoming ticket.
     """
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(UTC).isoformat()
 
     return {
         "ticket_id": str(uuid4()),

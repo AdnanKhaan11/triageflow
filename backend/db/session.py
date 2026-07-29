@@ -7,8 +7,10 @@ Database connection/session management.
 from __future__ import annotations
 
 import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from backend.db.models import Base
 
 # Read from environment variable, fall back to local SQLite file.
