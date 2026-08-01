@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TriageFlow — Sensor Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .sensor-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .sensor-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        transition: border-color 0.3s;
+      }
+      .sensor-card.anomaly {
+        border-color: var(--red);
+        box-shadow: 0 0 12px #ef444420;
+      }
+      .sensor-card.healthy {
+        border-color: var(--green);
+      }
+      .sensor-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+      }
+      .equipment-id {
+        font-family: var(--font-mono);
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--accent-orange);
+      }
+      .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .status-dot-live {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        animation: pulse 1.5s infinite;
+      }
+      .status-dot-live.red {
+        background: var(--red);
+      }
+      .status-dot-live.green {
+        background: var(--green);
+      }
+      .metric-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+      }
+      .metric {
+        text-align: center;
+        background: var(--bg-card-deep);
+        border-radius: var(--radius-sm);
+        padding: 0.5rem 0.25rem;
+      }
+      .metric-label {
+        font-size: 0.62rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-family: var(--font-mono);
+      }
+      .metric-value {
+        font-family: var(--font-mono);
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-top: 0.15rem;
+      }
+      .anomaly-bar-wrap {
+        height: 6px;
+        background: var(--bg-card-deep);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+      }
+      .anomaly-bar {
+        height: 100%;
+        border-radius: 3px;
+        transition:
+          width 0.4s ease,
+          background 0.3s;
+      }
+      .fault-label {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--text-secondary);
+      }
+      .stream-log {
+        background: var(--bg-card-deep);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-lg);
+        height: 260px;
+        overflow-y: auto;
+        padding: 0.75rem 1rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+      }
+      .log-entry {
+        padding: 0.2rem 0;
+        border-bottom: 1px solid var(--border-default);
+        display: flex;
+        gap: 0.75rem;
+      }
+      .log-time {
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+      .log-normal {
+        color: var(--green);
+      }
+      .log-fault {
+        color: var(--red);
+      }
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .stat-box {
+        background: var(--bg-card);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-lg);
+        padding: 1rem 1.25rem;
+        text-align: center;
+      }
+      .stat-number {
+        font-family: var(--font-mono);
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--accent-orange);
+      }
+      .stat-label {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+      }
+      .controls-bar {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+      }
+      .select-input {
+        background: var(--bg-input);
+        border: 1px solid var(--border-bright);
+        border-radius: var(--radius-md);
+        color: var(--text-primary);
+        font-family: var(--font-ui);
+        font-size: 0.84rem;
+        padding: 0.5rem 0.8rem;
+        outline: none;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .log-entry {
+        animation: fadeIn 0.2s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="nav">
+      <a href="index.html" class="nav-brand">
+        <div class="nav-logo">TF</div>
+        <div>
+          <div class="nav-title">TRIAGEFLOW</div>
+          <div class="nav-subtitle">Industrial Maintenance AI</div>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Submit Ticket</a>
+        <a href="review.html" class="nav-link">Review Queue</a>
+        <a href="dashboard.html" class="nav-link active">Sensor Dashboard</a>
+      </div>
+      <div class="nav-status">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-text">Connecting...</span>
+      </div>
+    </nav>
+
+    <!-- Pipeline Bar -->
+    <div class="pipeline-bar">
+      <div class="pipeline-step">
+        <span class="step-label completed">Ingest</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="pipeline-step">
+        <span class="step-label completed">Classify</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="pipeline-step">
+        <span class="step-label completed">Safety Check</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="pipeline-step">
+        <span class="step-label completed">Retrieve</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="pipeline-step">
+        <span class="step-label completed">Draft</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="pipeline-step">
+        <span class="step-label active">Sensor Monitor</span>
+      </div>
+    </div>
+
+    <div class="page-container" style="max-width: 1100px">
+      <div class="page-header">
+        <div class="page-eyebrow">Predictive Maintenance</div>
+        <div class="page-title">Real-Time Sensor Monitor</div>
+        <div class="page-desc">
+          AI pipeline monitors equipment sensor data continuously. Anomalies are
+          automatically escalated as TriageFlow tickets.
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-number" id="stat-total">0</div>
+          <div class="stat-label">Readings Analyzed</div>
+        </div>
+        <div class="stat-box">
+          <div
+            class="stat-number"
+            id="stat-anomalies"
+            style="color: var(--red)"
+          >
+            0
+          </div>
+          <div class="stat-label">Anomalies Detected</div>
+        </div>
+        <div class="stat-box">
+          <div
+            class="stat-number"
+            id="stat-tickets"
+            style="color: var(--accent-orange)"
+          >
+            0
+          </div>
+          <div class="stat-label">Tickets Created</div>
+        </div>
+        <div class="stat-box">
+          <div
+            class="stat-number"
+            id="stat-healthy"
+            style="color: var(--green)"
+          >
+            0
+          </div>
+          <div class="stat-label">Healthy Readings</div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls-bar">
+        <button
+          class="btn btn-primary"
+          id="btn-simulate"
+          onclick="startSimulation()"
+        >
+          ▶ Start Simulation
+        </button>
+        <button
+          class="btn btn-reject btn-sm"
+          id="btn-stop"
+          onclick="stopSimulation()"
+          style="display: none"
+        >
+          ■ Stop
+        </button>
+        <select class="select-input" id="equipment-select">
+          <option value="P-204">P-204 — Pump (Produced Water)</option>
+          <option value="P-207">P-207 — Pump (Cooling Water)</option>
+          <option value="C-11">C-11 — Compressor (Gas Lift)</option>
+          <option value="M-18">M-18 — Motor (Drive)</option>
+          <option value="T-501">T-501 — Turbine (Steam)</option>
+        </select>
+        <select class="select-input" id="mode-select">
+          <option value="mixed">Mixed (healthy + faults)</option>
+          <option value="healthy">Healthy only</option>
+          <option value="fault">Fault injection</option>
+        </select>
+        <span class="ticket-id" id="sim-status">Idle</span>
+      </div>
+
+      <!-- Sensor Cards Grid -->
+      <div class="sensor-grid" id="sensor-grid">
+        <!-- Cards injected by JS -->
+      </div>
+
+      <!-- Stream Log -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Live Event Stream</span>
+          <button
+            class="btn btn-sm"
+            style="
+              background: var(--bg-card-deep);
+              border: 1px solid var(--border-bright);
+              color: var(--text-secondary);
+              font-size: 0.68rem;
+            "
+            onclick="clearLog()"
+          >
+            Clear
+          </button>
+        </div>
+        <div class="stream-log" id="stream-log">
+          <div class="log-entry">
+            <span class="log-time">--:--:--</span>
+            <span class="log-normal"
+              >System ready. Press Start Simulation to begin.</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="api.js"></script>
+    <script src="sensor_monitor.js"></script>
+  </body>
+</html>

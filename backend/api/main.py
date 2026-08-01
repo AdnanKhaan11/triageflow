@@ -14,6 +14,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.api.routes import tickets as tickets_router
 from backend.db.session import init_db
 
+# Add this import at the top with your other route imports
+from backend.api.routes import sensors as sensors_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -46,6 +49,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(tickets_router.router)
+    app.include_router(sensors_router.router)
 
     @app.get("/health", tags=["Health"])
     def health():

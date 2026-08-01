@@ -272,3 +272,20 @@ async function deleteTicket(ticketId) {
     method: "DELETE",
   });
 }
+
+// POST /sensors/analyze
+async function analyzeSensor(equipmentId, signal, samplingRate = 20480) {
+  return apiFetch("/sensors/analyze", {
+    method: "POST",
+    body: JSON.stringify({
+      equipment_id: equipmentId,
+      signal: Array.from(signal),
+      sampling_rate: samplingRate,
+    }),
+  });
+}
+
+// GET /sensors/status
+async function getSensorStatus() {
+  return apiFetch("/sensors/status");
+}
